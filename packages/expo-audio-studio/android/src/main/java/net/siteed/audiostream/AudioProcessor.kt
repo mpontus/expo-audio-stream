@@ -655,7 +655,7 @@ class AudioProcessor(private val filesDir: File) {
     private fun computeMFCC(samples: FloatArray, sampleRate: Float): List<Float> {
         val (powerSpectrum, _) = prepareFFT(samples, sampleRate)
         val melFilters = computeMelFilterbank(
-            numFilters = 26,
+            numFilters = 40,
             powerSpectrumSize = powerSpectrum.size,
             sampleRate = sampleRate
         )
@@ -665,7 +665,7 @@ class AudioProcessor(private val filesDir: File) {
             return emptyList()
         }
 
-        val melEnergies = FloatArray(26) { i ->
+        val melEnergies = FloatArray(40) { i ->
             var energy = 0f
             for (j in powerSpectrum.indices) {
                 energy += powerSpectrum[j] * melFilters[i][j]
@@ -673,12 +673,12 @@ class AudioProcessor(private val filesDir: File) {
             ln(maxOf(energy, 1e-10f))
         }
 
-        val mfcc = FloatArray(13) { i ->
+        val mfcc = FloatArray(40) { i ->
             var sum = 0f
             for (j in melEnergies.indices) {
-                sum += melEnergies[j] * cos(PI * i * (2 * j + 1) / (2 * 26)).toFloat()
+                sum += melEnergies[j] * cos(PI * i * (2 * j + 1) / (2 * 40)).toFloat()
             }
-            sum * sqrt(2f / 26)
+            sum * sqrt(2f / 40)
         }
 
         return mfcc.toList()
